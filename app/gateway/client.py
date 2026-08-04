@@ -17,52 +17,36 @@ GATEWAY_CONFIG = {
         "on_status_codes": [429, 503]
     },
     "targets": [
-        {"override_params": {"model": settings.GROQ_MODEL}},
-        {"override_params": {"model": settings.GROQ_FALLBACK_MODEL}},
+        {"override_params": {"model": f"@{settings.GROQ_SLUG}/llama-3.3-70b-versatile"}},
+        {"override_params": {"model": f"@{settings.GROQ_SLUG_2}/llama-3.1-8b-instant"}},
     ]
 }
 
 portkey_client = Portkey(
     api_key=settings.PORTKEY_API_KEY,
-    config=settings.PORTKEY_CONFIG_SLUG or GATEWAY_CONFIG
-) if settings.PORTKEY_API_KEY else None
-
+    config=GATEWAY_CONFIG
+    
+)
 
 def get_langchain_llm(feature: str = "rag") -> ChatOpenAI:
     """
     Returns a Portkey-backed ChatOpenAI when Portkey is configured; otherwise it falls back
     to the direct Groq OpenAI-compatible endpoint.
     """
-    if not settings.PORTKEY_API_KEY:
-        return ChatOpenAI(
-            api_key=settings.GROQ_API_KEY,
-            base_url="https://api.groq.com/openai/v1",
-            model=settings.GROQ_MODEL,
-            temperature=0,
-        )
-
-    if settings.PORTKEY_CONFIG_SLUG:
-        return ChatOpenAI(
-            api_key=settings.PORTKEY_API_KEY,
-            base_url=PORTKEY_GATEWAY_URL,
-            model=settings.GROQ_MODEL,
-            temperature=0,
-            default_headers=createHeaders(
-                api_key=settings.PORTKEY_API_KEY,
-                config=settings.PORTKEY_CONFIG_SLUG,
-                metadata={
-                    "feature": feature,
-                    "_user": "rag-system",
-                    "environment": "production"
-                }
-            )
-        )
-
     return ChatOpenAI(
-        api_key=settings.GROQ_API_KEY,
-        base_url="https://api.groq.com/openai/v1",
-        model=settings.GROQ_MODEL,
+        api_key=settings.PORTKEY_API_KEY,
+        base_url=PORTKEY_GATEWAY_URL,
+        model=f"@{settings.GROQ_SLUG}/llama-3.3-70b-versatile",
         temperature=0,
+        default_headers=createHeaders(
+            api_key=settings.PORTKEY_API_KEY,
+            config=GATEWAY_CONFIG,
+            metadata={
+                "feature": feature,
+                "_user": "rag-system",
+                "environment": "development"
+            }
+        )
     )
 
 def extract_cache_status(response) -> str:
