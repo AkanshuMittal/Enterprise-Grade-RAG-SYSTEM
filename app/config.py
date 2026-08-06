@@ -26,7 +26,6 @@ class Settings:
     
     # --- LLM GATEWAY (PORTKEY) ---
     PORTKEY_API_KEY = os.getenv("PORTKEY_API_KEY")
-    PORTKEY_CONFIG_SLUG = os.getenv("PORTKEY_CONFIG_SLUG") or os.getenv("PORTKEY_CONFIG_ID")
     GROQ_SLUG = "rag"
     GROQ_SLUG_2 = "brag"
 
