@@ -18,6 +18,16 @@ def generate_node(state: AgentState):
 
     user_msg = state["messages"][-1]["content"] if state["messages"] else ""
 
+    if query != "CONVERSATIONAL" and not state["documents"]:
+        logfire.warning("No retrieval context found; skipping LLM synthesis.")
+        content = "I could not find relevant information in the enterprise knowledge base."
+        return {
+            "final_answer": content,
+            "status": "No relevant context found.",
+            "plan": state["plan"] + ["LLM Synthesis: Skipped (No Context)"],
+            "messages": [{"role": "assistant", "content": content}]
+        }
+
     if query == "CONVERSATIONAL":
         logfire.info("Generating conversational response using memory.")
         prompt = f"""
