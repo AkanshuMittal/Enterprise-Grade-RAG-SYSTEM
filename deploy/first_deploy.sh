@@ -1,15 +1,16 @@
+#!/usr/bin/env bash
 set -euo pipefail
 source "$(dirname "$0")/config.sh"
 
-TAG="manual-$(date +%Y%m%d-%H%M%S)"
+TAG="latest"
 API_IMAGE="${REGISTRY}/${SERVICE_NAME}:${TAG}"
 UI_IMAGE="${REGISTRY}/${UI_SERVICE_NAME}:${TAG}"
 
 echo "== Build + push API image via Cloud Build"
-gcloud builds submit --config <(printf "steps:\n- name: 'gcr.io/cloud-builders/docker'\n  args: ['build', '-f', 'deploy/Dockerfile', '-t', '%s', '.']\nimages:\n- '%s'\n" "$API_IMAGE" "$API_IMAGE") .
+#gcloud builds submit --config <(printf "steps:\n- name: 'gcr.io/cloud-builders/docker'\n  args: ['build', '-f', 'deploy/Dockerfile', '-t', '%s', '.']\nimages:\n- '%s'\n" "$API_IMAGE" "$API_IMAGE") .
 
 echo "== Build + push UI image via Cloud Build"
-gcloud builds submit --tag "$UI_IMAGE" ui
+#gcloud builds submit --tag "$UI_IMAGE" ui
 
 # Build --set-secrets and --set-env-vars from config.sh (only keys that exist)
 SECRETS_ARG=""
