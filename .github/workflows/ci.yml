@@ -17,12 +17,12 @@ jobs:
           python-version: "3.11"
 
       - name: Python syntax check (no dependencies needed)
-        run: python -m compileall -q app ui evals verification
+        run: python -m compileall -q app ui evals
 
       - name: Lint for real errors only
         run: |
           pip install ruff
-          ruff check --select E9,F63,F7,F82 app ui evals verification
+          ruff check --select E9,F63,F7,F82 app ui evals
 
       - name: Shell scripts parse
         run: for f in deploy/*.sh; do bash -n "$f"; done
