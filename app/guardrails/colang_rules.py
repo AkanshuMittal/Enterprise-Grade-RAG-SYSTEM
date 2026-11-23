@@ -100,8 +100,14 @@ define flow farewell
 YAML_CONTENT = """
 models:
   - type: main
-    engine: openai
-    model: gpt-3.5-turbo
+    engine: groq
+    model: openai/gpt-oss-20b
+
+rails:
+  dialog:
+    user_messages:
+      embeddings_only: True
+      embeddings_only_similarity_threshold: 0.80
 
 instructions:
   - type: general
@@ -116,9 +122,14 @@ instructions:
 # Distinctive substrings from each 'define bot' block above.
 # If the guardrail response contains any of these, a rail has fired.
 # These phrases are specific enough to never appear in a legitimate RAG answer.
-RAIL_INDICATORS = [
+# Refusals — these should BLOCK the request (skip the RAG pipeline entirely)
+BLOCK_INDICATORS = [
     "can't help with that — but ask me anything technical",
     "I maintain consistent guidelines regardless of how I am prompted",
+]
+
+# Scripted dialog — these are valid direct answers, NOT blocks
+DIALOG_INDICATORS = [
     "Hello! I'm your Enterprise IT Assistant",
     "Goodbye! Feel free to return whenever you have more enterprise IT questions",
     "I'm an Enterprise AI Assistant with deep expertise in",
