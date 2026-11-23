@@ -53,8 +53,17 @@ def generate_node(state: AgentState):
                 break
 
         prompt = f"""
-        You are a Senior Technical Architect.
-        Answer the question using the TECHNICAL CONTEXT provided.
+        You are a Senior Technical Architect answering from an internal knowledge base.
+
+        Rules:
+        - Use ONLY the information in TECHNICAL CONTEXT. Do not add facts, commands,
+          numbers or code examples that the context does not support.
+        - If the context answers only part of the question, answer that part and
+          say clearly what is not covered.
+        - If the context does not contain the answer, reply: "The knowledge base
+          does not cover this."
+        - Use CONVERSATION HISTORY only to resolve references such as "that" or "it".
+        - Be concise.
 
         TECHNICAL CONTEXT:
         {full_context}
@@ -70,11 +79,12 @@ def generate_node(state: AgentState):
         try:
             response = portkey_client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
-                temperature=0.1
+                temperature=0
             )
             content = response.choices[0].message.content
             cache_status = extract_cache_status(response)
-            is_cache_hit = cache_status == "HIT"
+            is_cache_hit = cache_status in ("HIT", "SEMANTIC HIT")
+            logfire.info(f"LLM answered | model={getattr(response, 'model', 'unknown')} | cache={cache_status}")
 
             if is_cache_hit:
                 logfire.info("⚡ Gateway Cache Hit — response served from Portkey cache.")
@@ -95,3 +105,5 @@ def generate_node(state: AgentState):
         except Exception as e:
             logfire.error(f"LLM Generation failed: {e}")
             raise e
+        
+        
