@@ -4,7 +4,9 @@ from app.agents.state import AgentState
 from app.agents.nodes.planner import planner_node
 from app.agents.nodes.retriever import retrieve_node
 from app.agents.nodes.responder import generate_node
-
+from app.agents.nodes.off_topic import off_topic_node
+import os 
+import sqlite3
 
 # 1. Initialize the State Graph
 workflow = StateGraph(AgentState)
@@ -14,6 +16,7 @@ workflow = StateGraph(AgentState)
 workflow.add_node("planner", planner_node)
 workflow.add_node("retriever", retrieve_node)
 workflow.add_node("responder", generate_node)
+workflow.add_node("off_topic", off_topic_node)
 
 # 3. Define the Edges & Routing Logic
 def route_planner(state: AgentState):
@@ -22,6 +25,8 @@ def route_planner(state: AgentState):
     """
     if state["current_query"] == "CONVERSATIONAL":
         return "responder"
+    elif state["current_query"] == "OFF_TOPIC":
+        return "off_topic"
     return "retriever"
 
 workflow.set_entry_point("planner")
@@ -33,18 +38,26 @@ workflow.add_conditional_edges(
     route_planner,
     {
         "retriever": "retriever",
-        "responder": "responder"
+        "responder": "responder",
+        "off_topic": "off_topic"
     }
 )
 
 
 workflow.add_edge("retriever", "responder")
 workflow.add_edge("responder", END)
+workflow.add_edge("off_topic", END)
 
+def build_checkpointer():
+    if os.getenv("MEMORY_BACKEND", "memory") == "sqlite":
+        from langgraph.checkpoint.sqlite import SqliteSaver
+        conn = sqlite3.connect("memory.db", check_same_thread=False)
+        return SqliteSaver(conn)
+    return MemorySaver()
 
 # --- MEMORY UPGRADE ---
 # MemorySaver allows the agent to remember conversations based on 'thread_id'
-checkpointer = MemorySaver()
+checkpointer = build_checkpointer()
 
 
 # 4. Compile the Graph with Memory
