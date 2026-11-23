@@ -1,0 +1,70 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write          # lets GitHub mint a short-lived token for GCP (keyless)
+    env:
+      REGISTRY: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.AR_REPO }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOYER_SA }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Docker auth
+        run: gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev --quiet
+
+      - name: Build and push API image
+        run: |
+          IMG=$REGISTRY/${{ vars.SERVICE_NAME }}:${{ github.sha }}
+          docker build -f deploy/Dockerfile -t $IMG .
+          docker push $IMG
+
+      - name: Build and push UI image
+        run: |
+          IMG=$REGISTRY/${{ vars.UI_SERVICE_NAME }}:${{ github.sha }}
+          docker build -t $IMG ui
+          docker push $IMG
+
+      # Only the image changes; secrets, env vars and sizing from first_deploy.sh are kept.
+      - name: Deploy API
+        run: |
+          gcloud run deploy ${{ vars.SERVICE_NAME }} \
+            --image $REGISTRY/${{ vars.SERVICE_NAME }}:${{ github.sha }} \
+            --region ${{ vars.GCP_REGION }}
+
+      - name: Deploy UI
+        run: |
+          gcloud run deploy ${{ vars.UI_SERVICE_NAME }} \
+            --image $REGISTRY/${{ vars.UI_SERVICE_NAME }}:${{ github.sha }} \
+            --region ${{ vars.GCP_REGION }}
+
+      - name: Smoke test
+        run: |
+          API=$(gcloud run services describe ${{ vars.SERVICE_NAME }} --region ${{ vars.GCP_REGION }} --format='value(status.url)')
+          UI=$(gcloud run services describe ${{ vars.UI_SERVICE_NAME }} --region ${{ vars.GCP_REGION }} --format='value(status.url)')
+          echo "API health:";  curl -fsS --retry 5 --retry-delay 10 "$API/health"
+          echo; echo "No key must give 401:"
+          CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$API/query" -H 'Content-Type: application/json' -d '{"q":"hi"}')
+          echo "got $CODE"; [ "$CODE" = "401" ]
+          echo "UI health:";   curl -fsS --retry 5 --retry-delay 10 "$UI/_stcore/health"
