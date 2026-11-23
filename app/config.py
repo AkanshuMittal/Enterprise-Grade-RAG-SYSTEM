@@ -15,14 +15,14 @@ load_environment()
 
 
 class Settings:
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+    JINA_API_KEY = os.getenv("JINA_API_KEY")
     QDRANT_URL = os.getenv("QDRANT_CLUSTER_ENDPOINT")
     QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
     QDRANT_COLLECTION = "enterprise_rag"
     
     GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-    GROQ_MODEL = "llama-3.3-70b-versatile"
-    GROQ_FALLBACK_MODEL = os.getenv("GROQ_FALLBACK_MODEL", "llama-3.1-8b-instant")
+    GROQ_MODEL = "openai/gpt-oss-120b"
+    GROQ_FALLBACK_MODEL = os.getenv("GROQ_FALLBACK_MODEL", "gemini-3.8-flash")
     
     # --- LLM GATEWAY (PORTKEY) ---
     PORTKEY_API_KEY = os.getenv("PORTKEY_API_KEY")
