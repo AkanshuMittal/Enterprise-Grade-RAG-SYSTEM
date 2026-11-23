@@ -1,26 +1,35 @@
 #!/usr/bin/env bash
+# FIRST deploy, run by hand once after setup_gcp.sh. Run from the project root:
+#   bash deploy/first_deploy.sh
+# After this, GitHub Actions (cd.yml) only updates the image on every push to main.
 set -euo pipefail
 source "$(dirname "$0")/config.sh"
 
-TAG="latest"
+TAG="manual-$(date +%Y%m%d-%H%M%S)"
 API_IMAGE="${REGISTRY}/${SERVICE_NAME}:${TAG}"
 UI_IMAGE="${REGISTRY}/${UI_SERVICE_NAME}:${TAG}"
 
 echo "== Build + push API image via Cloud Build"
-#gcloud builds submit --config <(printf "steps:\n- name: 'gcr.io/cloud-builders/docker'\n  args: ['build', '-f', 'deploy/Dockerfile', '-t', '%s', '.']\nimages:\n- '%s'\n" "$API_IMAGE" "$API_IMAGE") .
+gcloud builds submit --config <(printf "steps:\n- name: 'gcr.io/cloud-builders/docker'\n  args: ['build', '-f', 'deploy/Dockerfile', '-t', '%s', '.']\nimages:\n- '%s'\n" "$API_IMAGE" "$API_IMAGE") .
 
 echo "== Build + push UI image via Cloud Build"
-#gcloud builds submit --tag "$UI_IMAGE" ui
+gcloud builds submit --tag "$UI_IMAGE" ui
 
 # Build --set-secrets and --set-env-vars from config.sh (only keys that exist)
 SECRETS_ARG=""
 for key in "${SECRET_KEYS[@]}"; do
-  gcloud secrets describe "$key" >/dev/null 2>&1 && SECRETS_ARG+="${key}=${key}:latest,"
+  if gcloud secrets describe "$key" >/dev/null 2>&1; then
+    SECRETS_ARG+="${key}=${key}:latest,"
+  fi
 done
 SECRETS_ARG="${SECRETS_ARG%,}"
+
 ENV_ARG=""
 for key in "${PLAIN_KEYS[@]}"; do
-  ENV_ARG+="${key}=$(env_val "$key")@"
+  val=$(env_val "$key" || true)
+  if [ -n "$val" ]; then
+    ENV_ARG+="${key}=${val}@"
+  fi
 done
 ENV_ARG="${ENV_ARG%@}"
 
@@ -34,8 +43,8 @@ gcloud run deploy "$SERVICE_NAME" \
   --min-instances 0 --max-instances 1 \
   --timeout 300 --port 8080 \
   --allow-unauthenticated \
-  --set-secrets "$SECRETS_ARG" \
-  --set-env-vars "^@^${ENV_ARG}"
+  ${SECRETS_ARG:+--set-secrets "$SECRETS_ARG"} \
+  ${ENV_ARG:+--set-env-vars "^@^${ENV_ARG}"}
 
 API_URL=$(gcloud run services describe "$SERVICE_NAME" --region "$REGION" --format='value(status.url)')
 echo "API URL: $API_URL"
