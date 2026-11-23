@@ -1,50 +1,35 @@
+# LOCAL DEVELOPMENT ONLY. Cloud Run does not use this file.
+# Run from the project root:  docker compose up --build
+#   UI  -> http://localhost:8501
+#   API -> http://localhost:8000/health
 services:
-  qdrant:
-    image: qdrant/qdrant:latest
-    ports:
-      - "6333:6333"
-      - "6334:6334"
-    volumes:
-      - qdrant-data:/qdrant/storage
-    environment:
-      QDRANT__SERVICE__GRPC_PORT: 6334
-
   api:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: deploy/Dockerfile
+    env_file: .env
+    environment:
+      PORT: "8080"
     ports:
       - "8000:8080"
-    environment:
-      # By default the app reads QDRANT_URL / QDRANT_API_KEY from the .env file.
-      # Set these explicitly here only when you want to override the .env values
-      # (e.g. to point at the local qdrant service above).
-      QDRANT_COLLECTION: enterprise_rag
-      RATE_LIMIT_PER_MINUTE: "60"
-      RAG_API_KEY: ""
-      LOGFIRE_IGNORE_NO_CONFIG: "1"
-    env_file:
-      - .env
-    depends_on:
-      - qdrant
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
 
   ui:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: ./ui
+    environment:
+      PORT: "8501"
+      BACKEND_URL: http://api:8080      # service name, not localhost
+      RAG_API_KEY: ${RAG_API_KEY}       # read from .env by compose
     ports:
       - "8501:8501"
-    environment:
-      BACKEND_URL: http://api:8080
-      LOGFIRE_IGNORE_NO_CONFIG: "1"
-    env_file:
-      - .env
-    volumes:
-      - ./ui:/app/ui:ro
     depends_on:
-      - api
-    command: ["streamlit", "run", "ui/app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
-
-volumes:
-  qdrant-data:
+      api:
+        condition: service_healthy
+    # Optional: edit the UI without rebuilding (uncomment)
+    # volumes:
+    #   - ./ui/app.py:/app/app.py:ro
