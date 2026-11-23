@@ -16,7 +16,7 @@ def get_langchain_llm(feature: str = "rag") -> ChatOpenAI:
     return ChatOpenAI(
         api_key=settings.PORTKEY_API_KEY,
         base_url=PORTKEY_GATEWAY_URL,
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         temperature=0,
         default_headers=createHeaders(
             api_key=settings.PORTKEY_API_KEY,
@@ -30,14 +30,10 @@ def get_langchain_llm(feature: str = "rag") -> ChatOpenAI:
     )
 
 def extract_cache_status(response) -> str:
-    """
-    Pull x-portkey-cache-status from the Portkey native client response headers.
-    Tries multiple attribute paths defensively — returns 'MISS' if not found.
-    """
-    for attr in ("_raw_response", "_response", "_http_response"):
-        raw = getattr(response, attr, None)
-        if raw is not None:
-            status = getattr(raw, "headers", {}).get("x-portkey-cache-status", "")
-            if status:
-                return status.upper()
+    getter = getattr(response, "get_headers", None)
+    if callable(getter):
+        headers = getter() or {}
+        for key, value in headers.items():
+            if key.lower() == "x-portkey-cache-status" and value:
+                return str(value).upper()
     return "MISS"
