@@ -51,3 +51,6 @@ DOCS/
 .DS_Store
 Thumbs.db
 *.log
+
+# Memory
+memory.db*
