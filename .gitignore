@@ -42,7 +42,7 @@ htmlcov/
 .nox/
 .coverage
 .coverage.*
-.cache
+.cache/
 nosetests.xml
 coverage.xml
 *.cover
@@ -153,7 +153,10 @@ activemq-data/
 .venv
 env/
 venv/
+.venv/
+
 ENV/
+env.yaml
 env.bak/
 venv.bak/
 
@@ -216,3 +219,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Memory
+memory.db*
