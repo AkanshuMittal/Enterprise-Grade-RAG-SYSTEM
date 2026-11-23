@@ -1,0 +1,408 @@
+{
+  "judge_model": "qwen/qwen3.8-27b",
+  "answer_correctness_definition": "custom question-scoped (counts only facts the question requires; ignores unrequested extras)",
+  "samples_scored": 15,
+  "samples_skipped": [],
+  "guardrails_metrics": {
+    "tp": 3,
+    "tn": 3,
+    "fp": 0,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "accuracy": 1.0,
+    "total": 6,
+    "correct": 6
+  },
+  "means": {
+    "faithfulness": 0.951,
+    "answer_relevancy": 0.896,
+    "context_precision": 0.929,
+    "context_recall": 0.922,
+    "answer_correctness": 0.933,
+    "tool_correctness": 1.0
+  },
+  "per_sample": {
+    "faithfulness": [
+      {
+        "question": "How do you start Redis for a Kubernetes work queue?",
+        "faithfulness": 1.0
+      },
+      {
+        "question": "What does the parallelism field do in the Kubernetes job-wq-2 man",
+        "faithfulness": 0.667
+      },
+      {
+        "question": "How do you fill the Redis work queue with tasks using the CLI?",
+        "faithfulness": 1.0
+      },
+      {
+        "question": "What is the difference between HPA and VPA in Kubernetes?",
+        "faithfulness": 1.0
+      },
+      {
+        "question": "How do you install the Metrics Server for Kubernetes pod autoscal",
+        "faithfulness": 1.0
+      },
+      {
+        "question": "Which kubectl commands confirm that the Metrics Server is collect",
+        "faithfulness": 1.0
+      },
+      {
+        "question": "What Databricks CLI command retrieves the details of a specific j",
+        "faithfulness": 1.0
+      },
+      {
+        "question": "When should you use the Databricks REST API instead of the CLI or",
+        "faithfulness": 1.0
+      },
+      {
+        "question": "What are the three main developer tools for managing Databricks j",
+        "faithfulness": 1.0
+      },
+      {
+        "question": "What are the valid restart policy values for a Kubernetes Job pod",
+        "faithfulness": 1.0
+      },
+      {
+        "question": "What are the completions and parallelism fields in a Kubernetes J",
+        "faithfulness": 1.0
+      },
+      {
+        "question": "Which Kubernetes API group does a Job resource belong to?",
+        "faithfulness": 1.0
+      },
+      {
+        "question": "How do you start a local Kubernetes cluster using Minikube?",
+        "faithfulness": 1.0
+      },
+      {
+        "question": "What kubectl command checks the status of a running Kubernetes Jo",
+        "faithfulness": 1.0
+      },
+      {
+        "question": "How do you verify that the core Kubernetes components are running",
+        "faithfulness": 0.6
+      }
+    ],
+    "answer_relevancy": [
+      {
+        "question": "How do you start Redis for a Kubernetes work queue?",
+        "answer_relevancy": 0.964
+      },
+      {
+        "question": "What does the parallelism field do in the Kubernetes job-wq-2 man",
+        "answer_relevancy": 0.95
+      },
+      {
+        "question": "How do you fill the Redis work queue with tasks using the CLI?",
+        "answer_relevancy": 0.872
+      },
+      {
+        "question": "What is the difference between HPA and VPA in Kubernetes?",
+        "answer_relevancy": 0.7
+      },
+      {
+        "question": "How do you install the Metrics Server for Kubernetes pod autoscal",
+        "answer_relevancy": 0.994
+      },
+      {
+        "question": "Which kubectl commands confirm that the Metrics Server is collect",
+        "answer_relevancy": 0.662
+      },
+      {
+        "question": "What Databricks CLI command retrieves the details of a specific j",
+        "answer_relevancy": 0.971
+      },
+      {
+        "question": "When should you use the Databricks REST API instead of the CLI or",
+        "answer_relevancy": 0.991
+      },
+      {
+        "question": "What are the three main developer tools for managing Databricks j",
+        "answer_relevancy": 0.98
+      },
+      {
+        "question": "What are the valid restart policy values for a Kubernetes Job pod",
+        "answer_relevancy": 0.92
+      },
+      {
+        "question": "What are the completions and parallelism fields in a Kubernetes J",
+        "answer_relevancy": 0.967
+      },
+      {
+        "question": "Which Kubernetes API group does a Job resource belong to?",
+        "answer_relevancy": 0.823
+      },
+      {
+        "question": "How do you start a local Kubernetes cluster using Minikube?",
+        "answer_relevancy": 0.886
+      },
+      {
+        "question": "What kubectl command checks the status of a running Kubernetes Jo",
+        "answer_relevancy": 0.757
+      },
+      {
+        "question": "How do you verify that the core Kubernetes components are running",
+        "answer_relevancy": 0.999
+      }
+    ],
+    "context_precision": [
+      {
+        "question": "How do you start Redis for a Kubernetes work queue?",
+        "context_precision": 1.0
+      },
+      {
+        "question": "What does the parallelism field do in the Kubernetes job-wq-2 man",
+        "context_precision": 1.0
+      },
+      {
+        "question": "How do you fill the Redis work queue with tasks using the CLI?",
+        "context_precision": 1.0
+      },
+      {
+        "question": "What is the difference between HPA and VPA in Kubernetes?",
+        "context_precision": 0.679
+      },
+      {
+        "question": "How do you install the Metrics Server for Kubernetes pod autoscal",
+        "context_precision": 0.833
+      },
+      {
+        "question": "Which kubectl commands confirm that the Metrics Server is collect",
+        "context_precision": 1.0
+      },
+      {
+        "question": "What Databricks CLI command retrieves the details of a specific j",
+        "context_precision": 0.917
+      },
+      {
+        "question": "When should you use the Databricks REST API instead of the CLI or",
+        "context_precision": 1.0
+      },
+      {
+        "question": "What are the three main developer tools for managing Databricks j",
+        "context_precision": 1.0
+      },
+      {
+        "question": "What are the valid restart policy values for a Kubernetes Job pod",
+        "context_precision": 1.0
+      },
+      {
+        "question": "What are the completions and parallelism fields in a Kubernetes J",
+        "context_precision": 1.0
+      },
+      {
+        "question": "Which Kubernetes API group does a Job resource belong to?",
+        "context_precision": 1.0
+      },
+      {
+        "question": "How do you start a local Kubernetes cluster using Minikube?",
+        "context_precision": 1.0
+      },
+      {
+        "question": "What kubectl command checks the status of a running Kubernetes Jo",
+        "context_precision": 0.679
+      },
+      {
+        "question": "How do you verify that the core Kubernetes components are running",
+        "context_precision": 0.833
+      }
+    ],
+    "context_recall": [
+      {
+        "question": "How do you start Redis for a Kubernetes work queue?",
+        "context_recall": 1.0
+      },
+      {
+        "question": "What does the parallelism field do in the Kubernetes job-wq-2 man",
+        "context_recall": 0.5
+      },
+      {
+        "question": "How do you fill the Redis work queue with tasks using the CLI?",
+        "context_recall": 1.0
+      },
+      {
+        "question": "What is the difference between HPA and VPA in Kubernetes?",
+        "context_recall": 0.333
+      },
+      {
+        "question": "How do you install the Metrics Server for Kubernetes pod autoscal",
+        "context_recall": 1.0
+      },
+      {
+        "question": "Which kubectl commands confirm that the Metrics Server is collect",
+        "context_recall": 1.0
+      },
+      {
+        "question": "What Databricks CLI command retrieves the details of a specific j",
+        "context_recall": 1.0
+      },
+      {
+        "question": "When should you use the Databricks REST API instead of the CLI or",
+        "context_recall": 1.0
+      },
+      {
+        "question": "What are the three main developer tools for managing Databricks j",
+        "context_recall": 1.0
+      },
+      {
+        "question": "What are the valid restart policy values for a Kubernetes Job pod",
+        "context_recall": 1.0
+      },
+      {
+        "question": "What are the completions and parallelism fields in a Kubernetes J",
+        "context_recall": 1.0
+      },
+      {
+        "question": "Which Kubernetes API group does a Job resource belong to?",
+        "context_recall": 1.0
+      },
+      {
+        "question": "How do you start a local Kubernetes cluster using Minikube?",
+        "context_recall": 1.0
+      },
+      {
+        "question": "What kubectl command checks the status of a running Kubernetes Jo",
+        "context_recall": 1.0
+      },
+      {
+        "question": "How do you verify that the core Kubernetes components are running",
+        "context_recall": 1.0
+      }
+    ],
+    "answer_correctness": [
+      {
+        "question": "How do you start Redis for a Kubernetes work queue?",
+        "answer_correctness": 1.0
+      },
+      {
+        "question": "What does the parallelism field do in the Kubernetes job-wq-2 man",
+        "answer_correctness": 0.5
+      },
+      {
+        "question": "How do you fill the Redis work queue with tasks using the CLI?",
+        "answer_correctness": 1.0
+      },
+      {
+        "question": "What is the difference between HPA and VPA in Kubernetes?",
+        "answer_correctness": 1.0
+      },
+      {
+        "question": "How do you install the Metrics Server for Kubernetes pod autoscal",
+        "answer_correctness": 1.0
+      },
+      {
+        "question": "Which kubectl commands confirm that the Metrics Server is collect",
+        "answer_correctness": 1.0
+      },
+      {
+        "question": "What Databricks CLI command retrieves the details of a specific j",
+        "answer_correctness": 1.0
+      },
+      {
+        "question": "When should you use the Databricks REST API instead of the CLI or",
+        "answer_correctness": 1.0
+      },
+      {
+        "question": "What are the three main developer tools for managing Databricks j",
+        "answer_correctness": 1.0
+      },
+      {
+        "question": "What are the valid restart policy values for a Kubernetes Job pod",
+        "answer_correctness": 1.0
+      },
+      {
+        "question": "What are the completions and parallelism fields in a Kubernetes J",
+        "answer_correctness": 1.0
+      },
+      {
+        "question": "Which Kubernetes API group does a Job resource belong to?",
+        "answer_correctness": 1.0
+      },
+      {
+        "question": "How do you start a local Kubernetes cluster using Minikube?",
+        "answer_correctness": 1.0
+      },
+      {
+        "question": "What kubectl command checks the status of a running Kubernetes Jo",
+        "answer_correctness": 1.0
+      },
+      {
+        "question": "How do you verify that the core Kubernetes components are running",
+        "answer_correctness": 0.5
+      }
+    ],
+    "tool_correctness": [
+      {
+        "question": "How do you start Redis for a Kubernetes work queue?",
+        "tool_correctness": 1.0
+      },
+      {
+        "question": "What does the parallelism field do in the Kubernetes job-wq-2 man",
+        "tool_correctness": 1.0
+      },
+      {
+        "question": "How do you fill the Redis work queue with tasks using the CLI?",
+        "tool_correctness": 1.0
+      },
+      {
+        "question": "What is the difference between HPA and VPA in Kubernetes?",
+        "tool_correctness": 1.0
+      },
+      {
+        "question": "How do you install the Metrics Server for Kubernetes pod autoscal",
+        "tool_correctness": 1.0
+      },
+      {
+        "question": "Which kubectl commands confirm that the Metrics Server is collect",
+        "tool_correctness": 1.0
+      },
+      {
+        "question": "What Databricks CLI command retrieves the details of a specific j",
+        "tool_correctness": 1.0
+      },
+      {
+        "question": "When should you use the Databricks REST API instead of the CLI or",
+        "tool_correctness": 1.0
+      },
+      {
+        "question": "What are the three main developer tools for managing Databricks j",
+        "tool_correctness": 1.0
+      },
+      {
+        "question": "What are the valid restart policy values for a Kubernetes Job pod",
+        "tool_correctness": 1.0
+      },
+      {
+        "question": "What are the completions and parallelism fields in a Kubernetes J",
+        "tool_correctness": 1.0
+      },
+      {
+        "question": "Which Kubernetes API group does a Job resource belong to?",
+        "tool_correctness": 1.0
+      },
+      {
+        "question": "How do you start a local Kubernetes cluster using Minikube?",
+        "tool_correctness": 1.0
+      },
+      {
+        "question": "What kubectl command checks the status of a running Kubernetes Jo",
+        "tool_correctness": 1.0
+      },
+      {
+        "question": "How do you verify that the core Kubernetes components are running",
+        "tool_correctness": 1.0
+      }
+    ]
+  }
+}
+
+
+=== RESULTS ===
+faithfulness         mean = 0.951
+answer_relevancy     mean = 0.896
+context_precision    mean = 0.929
+context_recall       mean = 0.922
+answer_correctness   mean = 0.933
+tool_correctness     mean = 1.000

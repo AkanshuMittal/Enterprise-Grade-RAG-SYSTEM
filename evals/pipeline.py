@@ -1,21 +1,18 @@
-"""
-Phase 1 — Live Pipeline.
-Calls the running FastAPI /query endpoint for each golden sample.
-Captures: actual_response (truncated to 300 chars), actual_contexts (from sources),
-and actual_tools_called (detected from thought_process).
-"""
-
-
 import time
 import copy
 import json
 import os
 import requests
 import logfire
+import uuid
+from dotenv import load_dotenv
 
-API_URL = "http://localhost:8000/query"
-RESPONSE_TRUNCATE = 300
-DELAY_BETWEEN_CALLS = 10   # seconds — stays within Groq RPM on the main key
+load_dotenv()
+
+API_URL = os.getenv("EVAL_API_URL", "http://localhost:8000/query")
+HEADERS = {"x-api-key": os.getenv("RAG_API_KEY", "")}
+RESPONSE_TRUNCATE = 2000
+DELAY_BETWEEN_CALLS = 30   # seconds — NeMo guardrails + Groq TPM need breathing room
 REQUEST_TIMEOUT = 120      # seconds — guardrails + LangGraph + Groq can take >60s
 
 
@@ -47,6 +44,7 @@ def run_pipeline(golden_dataset: dict, progress_callback=None) -> dict:
     dataset = copy.deepcopy(golden_dataset)
     samples = dataset["rag_samples"]
     n = len(samples)
+    run_id = uuid.uuid4().hex[:8]   # fresh for every eval run
 
     with logfire.span("🚀 Eval Phase 1 — Live Pipeline", total_samples=n):
         for i, sample in enumerate(samples):
@@ -63,11 +61,15 @@ def run_pipeline(golden_dataset: dict, progress_callback=None) -> dict:
                 try:
                     resp = requests.post(
                         API_URL,
-                        json={"q": question, "thread_id": f"eval_run_{i}"},
+                        json={"q": question, "thread_id": f"eval_run_{run_id}_{i}"},
+                        headers=HEADERS,
                         timeout=REQUEST_TIMEOUT,
                     )
                     resp.raise_for_status()
                     data = resp.json()
+
+                    if data.get("status") == "error":
+                        raise RuntimeError(f"App returned status=error: {str(data.get('answer'))[:120]}")
 
                     raw_answer = data.get("answer") or ""
                     thought_process = data.get("thought_process") or []
@@ -87,14 +89,16 @@ def run_pipeline(golden_dataset: dict, progress_callback=None) -> dict:
                 except requests.exceptions.ConnectionError:
                     logfire.error("❌ Cannot reach FastAPI — is the app running on :8000?")
                     sample["actual_response"] = ""
-                    sample["actual_contexts"] = sample.get("relevant_contexts", [])
+                    sample["actual_contexts"] = []          # was: relevant_contexts
                     sample["actual_tools_called"] = ["unknown"]
+                    sample["failed"] = True                 # new line
 
                 except Exception as e:
                     logfire.error(f"❌ Query failed: {e}")
                     sample["actual_response"] = ""
-                    sample["actual_contexts"] = sample.get("relevant_contexts", [])
+                    sample["actual_contexts"] = []          # was: relevant_contexts
                     sample["actual_tools_called"] = ["unknown"]
+                    sample["failed"] = True                 # new line
 
             if progress_callback:
                 progress_callback(i, n, question, "done", sample["actual_response"])
@@ -106,12 +110,11 @@ def run_pipeline(golden_dataset: dict, progress_callback=None) -> dict:
 
 
 def save_results(dataset: dict, path: str) -> None:
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(dataset, f, indent=2)
         
         
 def load_golden_dataset() -> dict:
     golden_path = os.path.join(os.path.dirname(__file__), "golden_dataset.json")
-    with open(golden_path) as f:
+    with open(golden_path, encoding="utf-8") as f:
         return json.load(f)
-    

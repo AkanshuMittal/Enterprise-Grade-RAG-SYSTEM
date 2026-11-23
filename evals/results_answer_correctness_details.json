@@ -1,0 +1,184 @@
+{
+  "How do you start Redis for a Kubernetes work queue?": [
+    {
+      "fact": "Run kubectl apply -f https://k8s.io/examples/application/job/redis/redis-pod.yaml",
+      "status": "covered"
+    },
+    {
+      "fact": "Run kubectl apply -f https://k8s.io/examples/application/job/redis/redis-service.yaml",
+      "status": "covered"
+    }
+  ],
+  "What does the parallelism field do in the Kubernetes job-wq-2 manifest?": [
+    {
+      "fact": "The parallelism field is set to 2 in the job-wq-2 manifest.",
+      "status": "covered"
+    },
+    {
+      "fact": "The parallelism field means a maximum of 2 Pods run simultaneously.",
+      "status": "covered"
+    },
+    {
+      "fact": "Each pod picks up one unit of work from the Redis queue.",
+      "status": "contradicted"
+    },
+    {
+      "fact": "Each pod processes the work and repeats until the queue is empty.",
+      "status": "contradicted"
+    }
+  ],
+  "How do you fill the Redis work queue with tasks using the CLI?": [
+    {
+      "fact": "Start a temporary interactive pod using the command: kubectl run -i --tty temp --image redis --command \"/bin/sh\"",
+      "status": "covered"
+    },
+    {
+      "fact": "Connect to Redis using the command: redis-cli -h redis",
+      "status": "covered"
+    },
+    {
+      "fact": "Push tasks using the command: rpush job2 followed by the task name",
+      "status": "covered"
+    },
+    {
+      "fact": "Verify the queue contents using the command: lrange job2 0 -1",
+      "status": "covered"
+    }
+  ],
+  "What is the difference between HPA and VPA in Kubernetes?": [
+    {
+      "fact": "HPA scales the number of pod replicas up or down",
+      "status": "covered"
+    },
+    {
+      "fact": "HPA scaling is based on CPU or custom metrics",
+      "status": "covered"
+    },
+    {
+      "fact": "VPA adjusts the CPU and memory resource requests and limits for existing pods",
+      "status": "covered"
+    },
+    {
+      "fact": "HPA adds or removes pods",
+      "status": "covered"
+    },
+    {
+      "fact": "VPA resizes the resources of existing pods",
+      "status": "covered"
+    }
+  ],
+  "How do you install the Metrics Server for Kubernetes pod autoscaling?": [
+    {
+      "fact": "Run kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml to install the Metrics Server.",
+      "status": "covered"
+    },
+    {
+      "fact": "Verify the installation with kubectl get pods -n kube-system | grep metrics-server.",
+      "status": "covered"
+    }
+  ],
+  "Which kubectl commands confirm that the Metrics Server is collecting data?": [
+    {
+      "fact": "Run kubectl top nodes",
+      "status": "covered"
+    },
+    {
+      "fact": "Run kubectl top pods --all-namespaces",
+      "status": "covered"
+    }
+  ],
+  "What Databricks CLI command retrieves the details of a specific job?": [
+    {
+      "fact": "The command is 'databricks jobs get <job-id>'",
+      "status": "covered"
+    }
+  ],
+  "When should you use the Databricks REST API instead of the CLI or SDK?": [
+    {
+      "fact": "Use the Databricks REST API when none of the supported SDK languages (Python, Java, Go, R) are available for your use case.",
+      "status": "covered"
+    },
+    {
+      "fact": "Use the Databricks REST API when you need to automate processes for which no SDK currently exists in your preferred programming language.",
+      "status": "covered"
+    }
+  ],
+  "What are the three main developer tools for managing Databricks jobs programmatically?": [
+    {
+      "fact": "Databricks CLI is one of the three main developer tools",
+      "status": "covered"
+    },
+    {
+      "fact": "Databricks SDKs are one of the three main developer tools",
+      "status": "covered"
+    },
+    {
+      "fact": "Databricks REST API is one of the three main developer tools",
+      "status": "covered"
+    }
+  ],
+  "What are the valid restart policy values for a Kubernetes Job pod?": [
+    {
+      "fact": "OnFailure is a valid restart policy for a Kubernetes Job pod.",
+      "status": "covered"
+    },
+    {
+      "fact": "Never is a valid restart policy for a Kubernetes Job pod.",
+      "status": "covered"
+    },
+    {
+      "fact": "The Always policy is not allowed for a Kubernetes Job pod.",
+      "status": "covered"
+    }
+  ],
+  "What are the completions and parallelism fields in a Kubernetes Job spec?": [
+    {
+      "fact": "completions specifies how many pods must successfully complete before the Job is considered done",
+      "status": "covered"
+    },
+    {
+      "fact": "parallelism controls the maximum number of pods that can run at the same time",
+      "status": "covered"
+    }
+  ],
+  "Which Kubernetes API group does a Job resource belong to?": [
+    {
+      "fact": "A Job resource belongs to the batch/v1 API group.",
+      "status": "covered"
+    }
+  ],
+  "How do you start a local Kubernetes cluster using Minikube?": [
+    {
+      "fact": "Run minikube start --driver=docker",
+      "status": "covered"
+    },
+    {
+      "fact": "Creates a single-node Kubernetes cluster on your local machine using Docker",
+      "status": "covered"
+    },
+    {
+      "fact": "kubectl is automatically configured to use the minikube cluster",
+      "status": "covered"
+    },
+    {
+      "fact": "kubectl is automatically configured to use the default namespace",
+      "status": "covered"
+    }
+  ],
+  "What kubectl command checks the status of a running Kubernetes Job?": [
+    {
+      "fact": "Use kubectl get jobs to see the COMPLETIONS, DURATION, and AGE of all jobs.",
+      "status": "covered"
+    }
+  ],
+  "How do you verify that the core Kubernetes components are running after starting Minikube?": [
+    {
+      "fact": "Run kubectl get pods -n kube-system",
+      "status": "covered"
+    },
+    {
+      "fact": "All listed pods should show a Running status",
+      "status": "contradicted"
+    }
+  ]
+}

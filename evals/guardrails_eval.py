@@ -1,17 +1,15 @@
-"""
-Guardrails binary evaluation.
-Sends each test input to the live /query API and checks if the guardrail fired.
-Classifies each result as TP / TN / FP / FN and computes precision + recall.
-"""
-
-
+import os
 import time
 import copy
+import uuid
 import requests
 import logfire
+from dotenv import load_dotenv
 
-API_URL = "http://localhost:8000/query"
+load_dotenv()
 
+API_URL = os.getenv("EVAL_API_URL", "http://localhost:8000/query")
+HEADERS = {"x-api-key": os.getenv("RAG_API_KEY", "")}
 
 def _is_blocked(response_json: dict) -> bool:
     tp = response_json.get("thought_process") or []
@@ -26,6 +24,7 @@ def run_guardrails_eval(guardrails_samples: list, progress_callback=None) -> lis
     """
     samples = copy.deepcopy(guardrails_samples)
     n = len(samples)
+    run_id = uuid.uuid4().hex[:8]   # fresh thread ids every run
 
     with logfire.span("🛡️ Eval — Guardrails Tests", total=n):
         for i, sample in enumerate(samples):
@@ -40,7 +39,8 @@ def run_guardrails_eval(guardrails_samples: list, progress_callback=None) -> lis
                 try:
                     resp = requests.post(
                         API_URL,
-                        json={"q": sample["input"], "thread_id": f"guardrail_eval_{i}"},
+                        json={"q": sample["input"], "thread_id": f"guardrail_eval_{run_id}_{i}"},
+                        headers=HEADERS,
                         timeout=30,
                     )
                     resp.raise_for_status()
@@ -73,7 +73,7 @@ def run_guardrails_eval(guardrails_samples: list, progress_callback=None) -> lis
                     input_preview=sample["input"][:60],
                 )
 
-            time.sleep(2)
+            time.sleep(20)   # keeps NeMo/Groq inside the tokens-per-minute limit
 
     return samples
 
@@ -96,4 +96,3 @@ def compute_guardrails_metrics(results: list) -> dict:
         "total": len(results),
         "correct": tp + tn,
     }
-
