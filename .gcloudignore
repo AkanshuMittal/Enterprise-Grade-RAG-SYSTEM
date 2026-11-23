@@ -44,9 +44,6 @@ DATA/
 # Eval suite — local only
 evals/
 
-# Streamlit UI — local only
-ui/
-
 # Notebooks & docs
 notebooks/
 DOCS/
