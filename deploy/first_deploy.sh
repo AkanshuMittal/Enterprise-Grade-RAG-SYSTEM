@@ -9,16 +9,11 @@ TAG="manual-$(date +%Y%m%d-%H%M%S)"
 API_IMAGE="${REGISTRY}/${SERVICE_NAME}:${TAG}"
 UI_IMAGE="${REGISTRY}/${UI_SERVICE_NAME}:${TAG}"
 
-echo "== Docker auth for Artifact Registry"
-gcloud auth configure-docker "${REGION}-docker.pkg.dev" --quiet
+echo "== Build + push API image via Cloud Build"
+gcloud builds submit --config <(printf "steps:\n- name: 'gcr.io/cloud-builders/docker'\n  args: ['build', '-f', 'deploy/Dockerfile', '-t', '%s', '.']\nimages:\n- '%s'\n" "$API_IMAGE" "$API_IMAGE") .
 
-echo "== Build + push API image"
-docker build -f deploy/Dockerfile -t "$API_IMAGE" .
-docker push "$API_IMAGE"
-
-echo "== Build + push UI image"
-docker build -t "$UI_IMAGE" ui
-docker push "$UI_IMAGE"
+echo "== Build + push UI image via Cloud Build"
+gcloud builds submit --tag "$UI_IMAGE" ui
 
 # Build --set-secrets and --set-env-vars from config.sh (only keys that exist)
 SECRETS_ARG=""
