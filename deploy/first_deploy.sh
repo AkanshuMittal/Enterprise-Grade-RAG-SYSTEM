@@ -1,7 +1,3 @@
-#!/usr/bin/env bash
-# FIRST deploy, run by hand once after setup_gcp.sh. Run from the project root:
-#   bash deploy/first_deploy.sh
-# After this, GitHub Actions (cd.yml) only updates the image on every push to main.
 set -euo pipefail
 source "$(dirname "$0")/config.sh"
 
