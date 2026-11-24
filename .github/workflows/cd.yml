@@ -28,10 +28,7 @@ jobs:
         with:
           workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
           service_account: ${{ vars.GCP_DEPLOYER_SA }}
-          token_format: 'access_token'
-          access_token_scopes: 'https://googleapis.com'
-
-
+  
       - uses: google-github-actions/setup-gcloud@v2
 
       - name: Docker auth
