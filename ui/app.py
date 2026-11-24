@@ -218,6 +218,10 @@ with st.sidebar:
         st.session_state.pending = None
         st.rerun()
 
+def _pick_example(question: str):
+    st.session_state.pending = question
+
+
 # ---------------------------------------------------------------- empty state
 if not st.session_state.messages and not st.session_state.pending:
     st.markdown(
@@ -237,9 +241,13 @@ if not st.session_state.messages and not st.session_state.pending:
     c1, c2 = st.columns(2)
     for i, (icon, q) in enumerate(EXAMPLES):
         with (c1 if i % 2 == 0 else c2):
-            if st.button(f"{icon}  {q}", key=f"ex{i}", width="stretch"):
-                st.session_state.pending = q
-                st.rerun()
+            st.button(
+                f"{icon}  {q}",
+                key=f"ex{i}",
+                use_container_width=True,
+                on_click=_pick_example,
+                args=(q,),
+            )
 
 # ---------------------------------------------------------------- history
 for m in st.session_state.messages:
