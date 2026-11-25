@@ -37,7 +37,7 @@ EXAMPLES = [
     ("☸️", "What is Kubernetes and why is it used?"),
     ("⏰", "Explain CronJobs and when to use them"),
     ("🔧", "How do I debug a pod that keeps restarting?"),
-    ("🌐", "How does enterprise networking handle failover?"),
+    ("🌐", "What are the three main developer tools for managing Databricks jobs programmatically?"),
 ]
 
 # ---------------------------------------------------------------- page + style
