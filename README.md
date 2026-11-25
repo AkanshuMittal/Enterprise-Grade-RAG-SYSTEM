@@ -249,7 +249,7 @@ Set `GITHUB_REPO` in `deploy/config.sh` to your own `username/repo` before step 
 - **Shared demo key.** The public UI uses one API key for all visitors, so protection against abuse comes from the rate limit, not per-user accounts.
 - **Semantic search only.** No hybrid (keyword plus vector) search yet.
 
-## Possible next steps
+## Future Improvements
 
 - Larger golden dataset
 - Hybrid search and a rerank-score threshold for the "no relevant context" case
